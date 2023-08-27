@@ -7,8 +7,8 @@ module "db" {
   identifier = "ms-sql-db"
 
   engine            = "sqlserver-ex"
-  engine_version    = "15.00"
-  instance_class    = "db.t3.large"
+  engine_version    = "14.00"
+  instance_class    = "db.t2.micro"
   allocated_storage = 20
 
   db_name  = " "
@@ -38,10 +38,10 @@ module "db" {
   subnet_ids             = module.vpc.private_subnets
 
   # DB parameter group
-  family = "sqlserver-ex-15.0"
+  family = "sqlserver-ex-14.0"
 
   # DB option group
-  major_engine_version = "15.00"
+  major_engine_version = "14.00"
 
   # Database Deletion Protection
   deletion_protection = false
