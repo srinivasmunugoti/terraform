@@ -1,4 +1,4 @@
 #reference
 #https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest
 
-checking release-new conflicts
+checking release conflicts
