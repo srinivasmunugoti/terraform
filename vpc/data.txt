@@ -1,4 +1,4 @@
 #reference
 #https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest
 
-#observe internet gateway is attached to vpc or not
+checking merge conflicts
