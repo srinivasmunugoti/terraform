@@ -1,0 +1,36 @@
+----------------------------------------
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm install my-ingress-nginx ingress-nginx/ingress-nginx --version 4.7.1 --namespace test
+
+-------------------
+helm repo add aws https://aws.github.io/eks-charts
+helm install my-aws-load-balancer-controller -f values.yaml aws/aws-load-balancer-controller --version 1.6.0 --namespace test
+
+---------------
+helm repo add jenkinsci https://charts.jenkins.io/
+helm install my-jenkins jenkinsci/jenkins --version 4.6.1 --namespace test
+
+---------------------------------------------
+helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+helm install my-metrics-server metrics-server/metrics-server --version 3.11.0 --namespace test
+
+--
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install my-metrics-server bitnami/metrics-server --version 6.5.0 --namespace test
+
+--set apiService.create=true
+
+---------------------------------------------------------------------------------------------------------
+
+helm upgrade --install --namespace karpenter --create-namespace \
+  karpenter oci://public.ecr.aws/karpenter/karpenter \
+  --version v0.30.0-rc.0 \
+  --set serviceAccount.annotations.eks\.amazonaws\.com/role-arn=${KARPENTER_IAM_ROLE_ARN} \
+  --set settings.aws.clusterName=${CLUSTER_NAME} \
+  --set settings.aws.clusterEndpoint=${CLUSTER_ENDPOINT} \
+  --set settings.aws.defaultInstanceProfile=KarpenterNodeInstanceProfile-${CLUSTER_NAME} \
+  --set settings.aws.interruptionQueueName=${CLUSTER_NAME} \
+  --wait
+
