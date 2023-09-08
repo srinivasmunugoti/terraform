@@ -1,24 +1,53 @@
-# Karpenter
+prerequisite
+1)aws tool path added in system environment path
+2)terraform tool path added in system environment path
+3)kubectl tool path added in system environment path
+4)helm tool 
+5) git bash
+=======================================================================
+# contents present in scripts
+1)elastic cache
+2)rds(mssql)
+3)eks cluster with karpenter having two nodes 
+  3.1)addons(coredns,kubeproxy,vpc cni, ebs driver)
+  3.2)aws load balancer controller
+  3.3)helm charts (metric server, nginx ingress, jenkins)
 
-This example demonstrates how to provision a Karpenter on a serverless cluster (serverless data plane) using Fargate Profiles.
+============================================
+ 
+steps 
+1)do aws configure 
+2) update aws arn in main.tf file
+ replace userarn with your arn
+ aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::663043874531:user/srinivas@alike"
+      username = "srinivas@alike"
+      groups   = [""]
 
-This example solution provides:
+3) terraform init
+4)terraform apply -target module.vpc
+5) cd .\helmcharts\aws-load-balancer-controller\values.yaml
+6) change vpc id
+7)cd ../../
+8) terraform apply 
+9) wait for 30 min, once all completed , do local cluster details update using below command
 
-- Amazon EKS Cluster (control plane)
-- Amazon EKS Fargate Profiles for the `kube-system` namespace which is used by the `coredns`, `vpc-cni`, and `kube-proxy` addons, as well as profile that will match on the `karpenter` namespace which will be used by Karpenter.
-- Amazon EKS managed addons `coredns`, `vpc-cni` and `kube-proxy`
-    `coredns` has been patched to run on Fargate, and `vpc-cni` has been configured to use prefix delegation to better support the max pods setting of 110 on the Karpenter provisioner
-- A sample deployment is provided to demonstrates scaling a deployment to view how Karpenter responds to provision, and de-provision, resources on-demand
+aws eks update-kubeconfig --name karpenter --region us-east-1
+10) check cluster connection using below command, if getting pods running so cluster is running good
+kubectl get pods -A
+11) probably use git bash of same present locations for deploy helm charts of metric server,nginx,jenkins, check once all running well , add manually 
+ "AmazonEKS_EBS_CSI_DriverRole" to both the node groups so , jenkins also comes up and running automatically
 
-## Prerequisites:
+sh helmdeployments
 
-Ensure that you have the following tools installed locally:
+12) now everything is ready need to do some customisation as per our requirment
 
-1. [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-2. [kubectl](https://Kubernetes.io/docs/tasks/tools/)
-3. [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-## Deploy
+
+
+
+
 
 To provision this example:
 

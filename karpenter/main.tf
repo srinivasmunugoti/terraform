@@ -238,13 +238,24 @@ module "eks_blueprints_addons" {
     service_account          = "ebs-csi-controller-sa"
     resolve_conflicts        = "OVERWRITE"
     namespace                = "kube-system"
-    additional_iam_policies  = ["arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"]
+    additional_iam_policies  = [""]
     service_account_role_arn = ""
     tags                     = {}
     }
     }  
 
 
+  }
+
+  enable_aws_load_balancer_controller = true
+  # Optional  
+  aws_load_balancer_controller = {
+    name                       = "aws-load-balancer-controller"
+    chart                      = "aws-load-balancer-controller"
+    repository                 = "https://aws.github.io/eks-charts"
+    version                    = "1.6.0"
+    namespace                  = "kube-system"
+    values = [templatefile("./helmcharts/aws-load-balancer-controller/values.yaml", {})]
   }
 
   enable_karpenter = true
@@ -363,10 +374,12 @@ module "vpc" {
 
   name = local.name
   cidr = local.vpc_cidr
-
-  azs             = local.azs
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  azs  = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 7, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 12)]
+  
+  elasticache_subnet_group_name = "elastic-sub-group"
+  elasticache_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 7, k+24)]
 
   enable_nat_gateway = true
   single_nat_gateway = true
